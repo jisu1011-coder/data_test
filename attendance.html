@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nintendo 2001 Style Attendance</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, "맑은 고딕", sans-serif;
+  background:
+    radial-gradient(circle at top, #c0d5e6 0%, #7a8aba 45%, #3d4f97 100%);
+  color: #21242e;
+  min-height: 100vh;
+  padding: 30px 12px;
+}
+
+.app {
+  width: 820px;
+  max-width: 100%;
+  margin: 0 auto;
+  background: #7a8aba;
+  border: 3px solid #3d4f97;
+  box-shadow:
+    inset 2px 2px 0 #c0d5e6,
+    inset -2px -2px 0 #3d4f97,
+    8px 8px 0 rgba(0,0,0,.25);
+  padding: 10px;
+}
+
+.topbar {
+  background:
+    radial-gradient(#45495a 1px, transparent 1px),
+    #21242e;
+  background-size: 6px 6px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 3px solid #3d4f97;
+  gap: 14px;
+}
+
+.logo {
+  background: white;
+  color: #e60012;
+  border: 3px solid #e60012;
+  border-radius: 999px;
+  padding: 3px 16px;
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -1px;
+}
+
+.nav {
+  color: #e48600;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.subbar {
+  background: #9fbee7;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  border-bottom: 2px solid #3d4f97;
+}
+
+.hero {
+  margin-top: 10px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.2), transparent),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.14) 0 2px, transparent 2px 8px),
+    #acace7;
+  border: 3px solid #3d4f97;
+  box-shadow: inset 2px 2px 0 #ffffff, inset -2px -2px 0 #60619c;
+  padding: 18px;
+  position: relative;
+}
+
+.hero h1 {
+  margin: 0;
+  font-family: "Arial Black", Arial, sans-serif;
+  font-size: 42px;
+  color: white;
+  -webkit-text-stroke: 2px #21242e;
+  text-shadow: 4px 4px 0 #3d4f97;
+  line-height: 1;
+}
+
+.hero p {
+  margin: 8px 0 0;
+  font-weight: 700;
+  color: #21242e;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.panel {
+  background: #dedede;
+  border: 3px solid #3d4f97;
+  box-shadow: inset 2px 2px 0 #ffffff, inset -2px -2px 0 #60619c;
+}
+
+.panel-title {
+  background: #7a8aba;
+  color: #21242e;
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #3d4f97;
+}
+
+.panel-body {
+  padding: 12px;
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+input {
+  flex: 1;
+  height: 28px;
+  border: 2px solid #5a5f8c;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+button {
+  border: 2px solid #3d4f97;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,.7);
+}
+
+.add-btn, .check-btn {
+  background: #ecab37;
+  color: #21242e;
+  padding: 6px 12px;
+}
+
+.delete-btn {
+  background: #e60012;
+  color: white;
+  padding: 6px 10px;
+}
+
+.reset-btn {
+  width: 100%;
+  background: #f68d1f;
+  color: white;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.student-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.student-item {
+  background: white;
+  border: 2px solid #8ba1d4;
+  margin-bottom: 8px;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name {
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status {
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.present {
+  color: green;
+}
+
+.absent {
+  color: #e60012;
+}
+
+.rail-btn {
+  background: #21242e;
+  color: white;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.summary {
+  background: white;
+  border: 2px solid #3d4f97;
+  padding: 12px;
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.footer {
+  margin-top: 10px;
+  background: #21242e;
+  color: #9fbee7;
+  padding: 10px;
+  font-size: 10px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .student-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="logo">Attendance</div>
+    <div class="nav">Students · Check · Records · Class</div>
+  </div>
+
+  <div class="subbar">
+    HOME | TODAY CHECK | CLASS LIST | LOCAL SAVE
+  </div>
+
+  <div class="hero">
+    <h1>출석체크</h1>
+    <p>2001 콘솔 스타일 출석 관리 시스템</p>
+  </div>
+
+  <div class="content">
+
+    <div class="panel">
+      <div class="panel-title">Official Attendance</div>
+      <div class="panel-body">
+
+        <div class="input-row">
+          <input id="nameInput" type="text" placeholder="학생 이름 입력">
+          <button class="add-btn" onclick="addStudent()">ADD</button>
+        </div>
+
+        <ul id="studentList" class="student-list"></ul>
+
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Player's Status</div>
+      <div class="panel-body">
+
+        <button class="rail-btn">▶ Login Check</button>
+        <button class="rail-btn">▶ Class Mode</button>
+        <button class="rail-btn">▶ Save: LocalStorage</button>
+
+        <div id="summary" class="summary">
+          총원: 0명<br>
+          출석: 0명<br>
+          미출석: 0명
+        </div>
+
+        <button class="reset-btn" onclick="resetAttendance()">
+          Reset Attendance
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    © 2001 Style Attendance System · Made with HTML/CSS/JS
+  </div>
+
+</div>
+
+<script>
+let students = JSON.parse(localStorage.getItem("nintendoAttendance")) || [];
+
+const nameInput = document.getElementById("nameInput");
+
+nameInput.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    addStudent();
+  }
+});
+
+function saveData() {
+  localStorage.setItem("nintendoAttendance", JSON.stringify(students));
+}
+
+function addStudent() {
+  const name = nameInput.value.trim();
+
+  if (!name) {
+    alert("학생 이름을 입력하세요.");
+    return;
+  }
+
+  students.push({
+    id: Date.now(),
+    name: name,
+    present: false
+  });
+
+  nameInput.value = "";
+  saveData();
+  render();
+}
+
+function toggleAttendance(id) {
+  students = students.map(student => {
+    if (student.id === id) {
+      student.present = !student.present;
+    }
+    return student;
+  });
+
+  saveData();
+  render();
+}
+
+function deleteStudent(id) {
+  if (!confirm("이 학생을 삭제할까요?")) return;
+
+  students = students.filter(student => student.id !== id);
+  saveData();
+  render();
+}
+
+function resetAttendance() {
+  students = students.map(student => ({
+    ...student,
+    present: false
+  }));
+
+  saveData();
+  render();
+}
+
+function render() {
+  const list = document.getElementById("studentList");
+  const summary = document.getElementById("summary");
+
+  list.innerHTML = "";
+
+  students.forEach(student => {
+    const li = document.createElement("li");
+    li.className = "student-item";
+
+    li.innerHTML = `
+      <span class="name">🎮 ${student.name}</span>
+
+      <div class="actions">
+        <span class="status ${student.present ? "present" : "absent"}">
+          ${student.present ? "● 출석" : "○ 미출석"}
+        </span>
+
+        <button class="check-btn" onclick="toggleAttendance(${student.id})">
+          CHECK
+        </button>
+
+        <button class="delete-btn" onclick="deleteStudent(${student.id})">
+          DEL
+        </button>
+      </div>
+    `;
+
+    list.appendChild(li);
+  });
+
+  const total = students.length;
+  const present = students.filter(student => student.present).length;
+  const absent = total - present;
+
+  summary.innerHTML = `
+    총원: ${total}명<br>
+    출석: ${present}명<br>
+    미출석: ${absent}명
+  `;
+}
+
+render();
+</script>
+
+</body>
+</html>
