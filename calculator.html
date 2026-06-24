@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nintendo Calculator 2001</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+    radial-gradient(circle at top,#c0d5e6,#7a8aba 60%,#3d4f97);
+}
+
+.console{
+
+    width:420px;
+
+    background:#7a8aba;
+
+    border:4px solid #3d4f97;
+
+    box-shadow:
+    inset 2px 2px 0 #dfefff,
+    inset -2px -2px 0 #3d4f97,
+    10px 10px 0 rgba(0,0,0,.3);
+
+    padding:10px;
+}
+
+.topbar{
+
+    height:42px;
+
+    background:
+    radial-gradient(#444 1px,transparent 1px),
+    #21242e;
+
+    background-size:6px 6px;
+
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    gap:15px;
+}
+
+.logo{
+
+    background:white;
+
+    border:3px solid #e60012;
+
+    color:#e60012;
+
+    border-radius:999px;
+
+    padding:3px 15px;
+
+    font-weight:900;
+}
+
+.nav{
+    color:#e48600;
+    font-size:12px;
+    font-weight:700;
+}
+
+.hero{
+
+    margin-top:10px;
+
+    background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,.15) 0 4px,
+      transparent 4px 10px
+    ),
+    #acace7;
+
+    border:3px solid #3d4f97;
+
+    padding:15px;
+}
+
+.hero h1{
+
+    font-family:"Arial Black";
+
+    color:white;
+
+    font-size:36px;
+
+    text-shadow:
+    3px 3px 0 #3d4f97;
+
+    -webkit-text-stroke:2px #21242e;
+}
+
+.hero p{
+    font-weight:bold;
+    margin-top:6px;
+}
+
+.display-panel{
+
+    margin-top:10px;
+
+    background:#dedede;
+
+    border:3px solid #3d4f97;
+
+    padding:15px;
+}
+
+.display{
+
+    width:100%;
+    height:70px;
+
+    background:#d8ffb0;
+
+    border:4px inset #666;
+
+    text-align:right;
+
+    font-size:34px;
+
+    font-family:monospace;
+
+    padding:10px;
+
+    overflow:hidden;
+}
+
+.keys{
+
+    margin-top:10px;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(4,1fr);
+
+    gap:8px;
+}
+
+.btn{
+
+    height:58px;
+
+    border:2px solid #3d4f97;
+
+    cursor:pointer;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    box-shadow:
+    inset 1px 1px 0 white;
+}
+
+.number{
+    background:white;
+}
+
+.operator{
+    background:#ecab37;
+}
+
+.equal{
+    background:#f68d1f;
+    color:white;
+}
+
+.clear{
+    background:#e60012;
+    color:white;
+}
+
+.footer{
+
+    margin-top:10px;
+
+    background:#21242e;
+
+    color:#9fbee7;
+
+    text-align:center;
+
+    padding:8px;
+
+    font-size:11px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="console">
+
+    <div class="topbar">
+        <div class="logo">CALC</div>
+        <div class="nav">
+            MATH · MEMORY · SYSTEM
+        </div>
+    </div>
+
+    <div class="hero">
+        <h1>Calculator</h1>
+        <p>Nintendo 2001 Style Console Calculator</p>
+    </div>
+
+    <div class="display-panel">
+
+        <div id="display" class="display">0</div>
+
+        <div class="keys">
+
+            <button class="btn clear" onclick="clearDisplay()">C</button>
+            <button class="btn operator" onclick="append('/')">÷</button>
+            <button class="btn operator" onclick="append('*')">×</button>
+            <button class="btn operator" onclick="append('-')">−</button>
+
+            <button class="btn number" onclick="append('7')">7</button>
+            <button class="btn number" onclick="append('8')">8</button>
+            <button class="btn number" onclick="append('9')">9</button>
+            <button class="btn operator" onclick="append('+')">+</button>
+
+            <button class="btn number" onclick="append('4')">4</button>
+            <button class="btn number" onclick="append('5')">5</button>
+            <button class="btn number" onclick="append('6')">6</button>
+            <button class="btn equal" onclick="calculate()">=</button>
+
+            <button class="btn number" onclick="append('1')">1</button>
+            <button class="btn number" onclick="append('2')">2</button>
+            <button class="btn number" onclick="append('3')">3</button>
+            <button class="btn number" onclick="append('.')">.</button>
+
+            <button class="btn number" style="grid-column:span 4"
+            onclick="append('0')">0</button>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        © 2001 Nintendo Style Calculator
+    </div>
+
+</div>
+
+<script>
+
+let expression = "";
+
+const display =
+document.getElementById("display");
+
+function updateDisplay(){
+
+    display.textContent =
+    expression || "0";
+}
+
+function append(value){
+
+    expression += value;
+
+    updateDisplay();
+}
+
+function clearDisplay(){
+
+    expression = "";
+
+    updateDisplay();
+}
+
+function calculate(){
+
+    try{
+
+        expression =
+        String(eval(expression));
+
+        updateDisplay();
+
+    }catch{
+
+        display.textContent = "ERROR";
+
+        expression = "";
+    }
+}
+
+document.addEventListener(
+"keydown",
+e=>{
+
+    const key = e.key;
+
+    if(
+        "0123456789.+-*/"
+        .includes(key)
+    ){
+        append(key);
+    }
+
+    if(key==="Enter"){
+        calculate();
+    }
+
+    if(key==="Escape"){
+        clearDisplay();
+    }
+
+    if(key==="Backspace"){
+
+        expression =
+        expression.slice(0,-1);
+
+        updateDisplay();
+    }
+});
+
+</script>
+
+</body>
+</html>
