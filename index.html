@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>해양사고 현황 대시보드</title>
+  <style>
+    :root {
+      --bg: #f3f7fb;
+      --panel: #ffffff;
+      --line: #d9e3ee;
+      --text: #1f2937;
+      --muted: #5f6b7a;
+      --brand: #005bac;
+      --brand-strong: #0b4172;
+      --brand-soft: #eaf3fc;
+      --accent: #0f9d8a;
+      --highlight: #fff4c2;
+      --highlight-line: #f3c743;
+      --shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: linear-gradient(180deg, #edf4fb 0%, var(--bg) 24%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 40px;
+    }
+
+    .hero {
+      padding: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--brand-strong) 0%, var(--brand) 55%, #2a82d0 100%);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .hero .eyebrow {
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.3;
+    }
+
+    .hero p {
+      margin: 12px 0 0;
+      max-width: 780px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .controls {
+      margin-top: 20px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #c3cfdb;
+      border-radius: 8px;
+      padding: 0 14px;
+      font-size: 15px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .field select:focus,
+    .field input:focus {
+      outline: 2px solid rgba(0, 91, 172, 0.16);
+      border-color: var(--brand);
+    }
+
+    .content {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    .summary,
+    .detail,
+    .overview {
+      padding: 22px;
+    }
+
+    .summary {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .subtext {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: 8px;
+      background: var(--brand-soft);
+      border: 1px solid #d4e5f7;
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .metric .value {
+      font-size: 34px;
+      line-height: 1.1;
+      font-weight: 800;
+      color: var(--brand);
+    }
+
+    .metric .help {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .notice {
+      padding: 16px 18px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e1e8f0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 560px;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #e8eef5;
+      font-size: 14px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f7fafd;
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background: #f9fbfe;
+    }
+
+    .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bar-cell {
+      width: 40%;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8eef4;
+    }
+
+    .bar-fill {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--brand) 0%, var(--accent) 100%);
+    }
+
+    .total-box {
+      margin-top: 16px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-radius: 8px;
+      background: #f8fbff;
+      border: 1px solid #d2e3f7;
+    }
+
+    .total-box strong {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .total-box .value {
+      color: var(--brand);
+      font-size: 28px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .overview {
+      margin-top: 20px;
+    }
+
+    .overview .table-wrap {
+      max-height: 520px;
+      overflow: auto;
+    }
+
+    .highlight-row {
+      background: var(--highlight);
+      outline: 2px solid var(--highlight-line);
+      outline-offset: -2px;
+    }
+
+    .highlight-row td {
+      font-weight: 700;
+    }
+
+    .status {
+      min-height: 22px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 920px) {
+      .controls,
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 26px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 16px 14px 28px;
+      }
+
+      .hero,
+      .controls,
+      .summary,
+      .detail,
+      .overview {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">해양수산부 정보화담당관실</p>
+      <h1>연도별 해양사고 현황 대시보드</h1>
+      <p>제공된 해양사고 데이터를 바탕으로 연도별 총 사고 건수와 사고 유형별 현황을 한 화면에서 손쉽게 조회할 수 있도록 구성했습니다.</p>
+    </section>
+
+    <section class="controls panel">
+      <div class="field">
+        <label for="yearSelect">연도 선택</label>
+        <select id="yearSelect" aria-label="연도 선택"></select>
+      </div>
+      <div class="field">
+        <label for="yearSearch">연도 검색</label>
+        <input id="yearSearch" type="search" inputmode="numeric" maxlength="4" placeholder="예: 2008" aria-label="연도 검색">
+      </div>
+    </section>
+
+    <section class="content">
+      <aside class="summary panel">
+        <div>
+          <h2>선택 연도 요약</h2>
+          <p class="subtext">선택한 연도의 사고 현황을 빠르게 확인할 수 있습니다.</p>
+        </div>
+
+        <div class="metric">
+          <strong>기준 연도</strong>
+          <div class="value" id="selectedYearText">-</div>
+          <div class="help">드롭다운에서 연도를 바꾸면 오른쪽 표와 아래 현황표가 함께 갱신됩니다.</div>
+        </div>
+
+        <div class="metric">
+          <strong>총 사고 건수</strong>
+          <div class="value" id="totalAccidents">0건</div>
+          <div class="help" id="topCategoryText">가장 많은 사고 유형 정보가 여기에 표시됩니다.</div>
+        </div>
+
+        <div class="notice" id="searchStatus">연도를 검색하면 아래 연도별 현황표에서 해당 연도 행이 강조되어 표시됩니다.</div>
+      </aside>
+
+      <section class="detail panel">
+        <div class="section-head">
+          <div>
+            <h2>사고 유형별 건수</h2>
+            <p class="subtext" id="detailDescription">선택한 연도의 사고 유형별 건수와 비중을 보여줍니다.</p>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table aria-describedby="detailDescription">
+            <thead>
+              <tr>
+                <th scope="col">사고 유형</th>
+                <th scope="col" class="num">건수</th>
+                <th scope="col" class="bar-cell">비중</th>
+              </tr>
+            </thead>
+            <tbody id="typeTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="total-box">
+          <strong>선택 연도 총 사고 건수</strong>
+          <span class="value" id="totalAccidentsBottom">0건</span>
+        </div>
+      </section>
+    </section>
+
+    <section class="overview panel">
+      <div class="section-head">
+        <div>
+          <h2>연도별 총 사고 현황</h2>
+          <p class="subtext">연도를 직접 검색하면 해당 연도 행이 강조됩니다.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table aria-label="연도별 총 사고 현황">
+          <thead>
+            <tr>
+              <th scope="col">연도</th>
+              <th scope="col" class="num">총 사고 건수</th>
+              <th scope="col">최다 사고 유형</th>
+              <th scope="col" class="num">최다 유형 건수</th>
+            </tr>
+          </thead>
+          <tbody id="yearTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="status" id="overviewStatus"></div>
+    </section>
+  </main>
+
+  <script>
+    const accidentData = [
+      { year: 1998, total: 772, collision: 147, contact: 5, grounding: 77, capsizing: 14, fireExplosion: 60, sinking: 84, engineDamage: 242 },
+      { year: 1999, total: 849, collision: 173, contact: 2, grounding: 68, capsizing: 27, fireExplosion: 67, sinking: 90, engineDamage: 269 },
+      { year: 2000, total: 634, collision: 130, contact: 11, grounding: 58, capsizing: 19, fireExplosion: 48, sinking: 63, engineDamage: 196 },
+      { year: 2001, total: 610, collision: 141, contact: 15, grounding: 60, capsizing: 21, fireExplosion: 62, sinking: 72, engineDamage: 135 },
+      { year: 2002, total: 557, collision: 184, contact: 13, grounding: 58, capsizing: 29, fireExplosion: 42, sinking: 55, engineDamage: 110 },
+      { year: 2003, total: 531, collision: 182, contact: 9, grounding: 65, capsizing: 22, fireExplosion: 53, sinking: 50, engineDamage: 57 },
+      { year: 2004, total: 804, collision: 210, contact: 12, grounding: 75, capsizing: 35, fireExplosion: 57, sinking: 69, engineDamage: 147 },
+      { year: 2005, total: 658, collision: 172, contact: 10, grounding: 46, capsizing: 22, fireExplosion: 71, sinking: 45, engineDamage: 166 },
+      { year: 2006, total: 657, collision: 167, contact: 17, grounding: 66, capsizing: 16, fireExplosion: 41, sinking: 25, engineDamage: 195 },
+      { year: 2007, total: 566, collision: 148, contact: 9, grounding: 39, capsizing: 21, fireExplosion: 37, sinking: 19, engineDamage: 185 },
+      { year: 2008, total: 480, collision: 125, contact: 15, grounding: 32, capsizing: 8, fireExplosion: 25, sinking: 18, engineDamage: 145 },
+      { year: 2009, total: 723, collision: 160, contact: 10, grounding: 43, capsizing: 18, fireExplosion: 34, sinking: 22, engineDamage: 253 },
+      { year: 2010, total: 737, collision: 174, contact: 22, grounding: 64, capsizing: 17, fireExplosion: 25, sinking: 22, engineDamage: 236 },
+      { year: 2011, total: 946, collision: 208, contact: 23, grounding: 64, capsizing: 38, fireExplosion: 57, sinking: 27, engineDamage: 261 },
+      { year: 2012, total: 726, collision: 157, contact: 21, grounding: 53, capsizing: 25, fireExplosion: 55, sinking: 26, engineDamage: 178 }
+    ];
+
+    const categoryMeta = [
+      { key: "collision", label: "충돌" },
+      { key: "contact", label: "접촉" },
+      { key: "grounding", label: "좌초" },
+      { key: "capsizing", label: "전복" },
+      { key: "fireExplosion", label: "화재폭발" },
+      { key: "sinking", label: "침몰" },
+      { key: "engineDamage", label: "기관손상" }
+    ];
+
+    const yearSelect = document.getElementById("yearSelect");
+    const yearSearch = document.getElementById("yearSearch");
+    const selectedYearText = document.getElementById("selectedYearText");
+    const totalAccidents = document.getElementById("totalAccidents");
+    const totalAccidentsBottom = document.getElementById("totalAccidentsBottom");
+    const topCategoryText = document.getElementById("topCategoryText");
+    const detailDescription = document.getElementById("detailDescription");
+    const typeTableBody = document.getElementById("typeTableBody");
+    const yearTableBody = document.getElementById("yearTableBody");
+    const searchStatus = document.getElementById("searchStatus");
+    const overviewStatus = document.getElementById("overviewStatus");
+
+    const availableYears = accidentData.map((item) => String(item.year));
+
+    init();
+
+    function init() {
+      availableYears.forEach((year) => {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year + "년";
+        yearSelect.appendChild(option);
+      });
+
+      yearSelect.value = availableYears[availableYears.length - 1];
+      renderYearTable();
+      renderDetail(Number(yearSelect.value));
+      applyHighlight(yearSelect.value, false);
+
+      yearSelect.addEventListener("change", (event) => {
+        const year = Number(event.target.value);
+        renderDetail(year);
+        yearSearch.value = String(year);
+        applyHighlight(String(year), false);
+      });
+
+      yearSearch.addEventListener("input", (event) => {
+        const inputYear = event.target.value.trim();
+
+        if (availableYears.includes(inputYear)) {
+          yearSelect.value = inputYear;
+          renderDetail(Number(inputYear));
+          applyHighlight(inputYear, true);
+          return;
+        }
+
+        clearHighlight();
+
+        if (inputYear === "") {
+          applyHighlight(yearSelect.value, false);
+        } else {
+          searchStatus.textContent = inputYear + "년에 해당하는 데이터가 없습니다.";
+          overviewStatus.textContent = "일치하는 연도를 찾지 못했습니다.";
+        }
+      });
+    }
+
+    function renderDetail(year) {
+      const row = accidentData.find((item) => item.year === year);
+      const categories = categoryMeta
+        .map((meta) => ({ label: meta.label, value: row[meta.key] }))
+        .sort((a, b) => b.value - a.value);
+      const topCategory = categories[0];
+
+      selectedYearText.textContent = year + "년";
+      totalAccidents.textContent = formatNumber(row.total) + "건";
+      totalAccidentsBottom.textContent = formatNumber(row.total) + "건";
+      topCategoryText.textContent = "가장 많은 사고 유형은 " + topCategory.label + " (" + formatNumber(topCategory.value) + "건)입니다.";
+      detailDescription.textContent = year + "년 사고 유형별 건수와 전체 대비 비중입니다.";
+
+      typeTableBody.innerHTML = categories.map((category) => {
+        const ratio = row.total === 0 ? 0 : (category.value / row.total) * 100;
+        return [
+          "<tr>",
+          "<td>" + category.label + "</td>",
+          "<td class=\"num\">" + formatNumber(category.value) + "</td>",
+          "<td class=\"bar-cell\">",
+          "<div class=\"bar-track\" aria-hidden=\"true\"><span class=\"bar-fill\" style=\"width: " + ratio.toFixed(1) + "%\"></span></div>",
+          "</td>",
+          "</tr>"
+        ].join("");
+      }).join("");
+    }
+
+    function renderYearTable() {
+      yearTableBody.innerHTML = accidentData.map((row) => {
+        const topCategory = categoryMeta
+          .map((meta) => ({ label: meta.label, value: row[meta.key] }))
+          .sort((a, b) => b.value - a.value)[0];
+
+        return [
+          "<tr data-year=\"" + row.year + "\">",
+          "<td>" + row.year + "</td>",
+          "<td class=\"num\">" + formatNumber(row.total) + "</td>",
+          "<td>" + topCategory.label + "</td>",
+          "<td class=\"num\">" + formatNumber(topCategory.value) + "</td>",
+          "</tr>"
+        ].join("");
+      }).join("");
+    }
+
+    function applyHighlight(year, shouldScroll) {
+      clearHighlight();
+
+      const targetRow = yearTableBody.querySelector("tr[data-year=\"" + year + "\"]");
+      if (!targetRow) {
+        overviewStatus.textContent = "일치하는 연도를 찾지 못했습니다.";
+        return;
+      }
+
+      targetRow.classList.add("highlight-row");
+      searchStatus.textContent = year + "년 데이터가 강조되어 표시되고 있습니다.";
+      overviewStatus.textContent = year + "년 행을 강조 표시했습니다.";
+
+      if (shouldScroll) {
+        targetRow.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    function clearHighlight() {
+      yearTableBody.querySelectorAll("tr").forEach((row) => {
+        row.classList.remove("highlight-row");
+      });
+    }
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat("ko-KR").format(value);
+    }
+  </script>
+</body>
+</html>
